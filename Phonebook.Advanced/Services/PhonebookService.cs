@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Phonebook.Advanced.Models;
 using Newtonsoft.Json;
 
@@ -23,16 +26,42 @@ namespace Phonebook.Advanced.Services
         public async Task<ContactsViewModel> GetContactsAsync()
         {
             var jsonResponse = new ContactsViewModel();
+            
+            try
+            {
+                using (var response = await _client.GetAsync(_baseUrl))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var resp = response.Content.ReadAsStringAsync().Result;
+
+                        jsonResponse = JsonConvert.DeserializeObject<ContactsViewModel>(resp);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            return jsonResponse;
+        }
+
+        public async Task<ContactViewModel> CreateContactAsync(ContactViewModel contact)
+        {
+            var jsonResponse = new ContactViewModel();
 
             try
             {
-                var response = await _client.GetAsync(_baseUrl);
-
-                if (response.IsSuccessStatusCode)
+                using (var content = new StringContent(JsonConvert.SerializeObject(contact), Encoding.UTF8, "application/json"))
+                using (var response = await _client.PostAsync(_baseUrl, content))
                 {
-                    var resp = response.Content.ReadAsStringAsync().Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var resp = response.Content.ReadAsStringAsync().Result;
 
-                    jsonResponse = JsonConvert.DeserializeObject<ContactsViewModel>(resp);
+                        jsonResponse = JsonConvert.DeserializeObject<ContactViewModel>(resp);
+                    }
                 }
             }
             catch (Exception ex)

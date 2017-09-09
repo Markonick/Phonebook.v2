@@ -44,7 +44,7 @@ namespace Phonebook.Advanced
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Phonebook}/{action=Contacts}");
+                    template: "{controller=Phonebook}/{action=GetContacts}");
             });
         }
     }
