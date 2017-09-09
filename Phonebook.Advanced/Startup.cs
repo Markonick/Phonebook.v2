@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Net.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Phonebook.Advanced.Services;
 
 namespace Phonebook.Advanced
 {
@@ -27,6 +25,10 @@ namespace Phonebook.Advanced
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var apiSettings = Configuration.GetSection("apisettings");
+            var apiBaseUrl = apiSettings.GetValue<string>("baseurl");
+
+            services.AddSingleton<IPhonebookService, IPhonebookService>(x => new PhonebookService(new HttpClient(), apiBaseUrl));
             // Add framework services.
             services.AddMvc();
         }
@@ -37,23 +39,12 @@ namespace Phonebook.Advanced
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseBrowserLink();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
-
             app.UseStaticFiles();
-
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Phonebook}/{action=Contacts}");
             });
         }
     }

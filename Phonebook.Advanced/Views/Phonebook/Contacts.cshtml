@@ -1,0 +1,47 @@
+﻿@model IEnumerable<ContactViewModel>
+
+@{
+    ViewData["Title"] = "Contacts";
+}
+
+<h2>Phonebook Contacts</h2>
+
+@using (Html.BeginForm())
+{
+    <p>
+        Find by name: @Html.TextBox("SearchString")
+        <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button>
+    </p>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+                <th>
+                    @Html.ActionLink("Name", "Contacts", new { sortOrder = ViewBag.NameSortParm })
+                </th>
+                <th>
+                    @Html.ActionLink("Phone Number", "Contacts", new { sortOrder = ViewBag.PhoneSortParm })
+                </th>
+                <th>
+                    @Html.ActionLink("Address", "Contacts", new { sortOrder = ViewBag.AddressSortParm })
+                </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PhoneNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Address)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
