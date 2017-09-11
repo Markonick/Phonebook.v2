@@ -6,6 +6,7 @@ namespace Phonebook.Advanced.Services
     public interface IPhonebookService
     {
         Task<ContactsViewModel> GetContactsAsync();
-        Task<ContactViewModel> CreateContactAsync(ContactViewModel contact);
+        Task<ContactsViewModel> CreateContactAsync(ContactViewModel contact);
+        Task<ContactsViewModel> DeleteContactAsync(ContactViewModel contact);
     }
 }

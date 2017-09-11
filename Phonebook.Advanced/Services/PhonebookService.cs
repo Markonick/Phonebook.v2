@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -13,11 +14,13 @@ namespace Phonebook.Advanced.Services
     public class PhonebookService : IPhonebookService
     {
         private readonly HttpClient _client;
+        private readonly IRepository _repository;
         private readonly string _baseUrl;
 
-        public PhonebookService(HttpClient client, string baseUrl)
+        public PhonebookService(HttpClient client, IRepository repository, string baseUrl)
         {
             _client = client;
+            _repository = repository;
             _baseUrl = baseUrl;
             _client.DefaultRequestHeaders.Clear();
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -37,6 +40,8 @@ namespace Phonebook.Advanced.Services
 
                         jsonResponse = JsonConvert.DeserializeObject<ContactsViewModel>(resp);
                     }
+
+                    await _repository.SaveContactsAsync(jsonResponse);
                 }
             }
             catch (Exception ex)
@@ -47,9 +52,9 @@ namespace Phonebook.Advanced.Services
             return jsonResponse;
         }
 
-        public async Task<ContactViewModel> CreateContactAsync(ContactViewModel contact)
+        public async Task<ContactsViewModel> CreateContactAsync(ContactViewModel contact)
         {
-            var jsonResponse = new ContactViewModel();
+            var jsonResponse = new ContactsViewModel();
 
             try
             {
@@ -60,7 +65,7 @@ namespace Phonebook.Advanced.Services
                     {
                         var resp = response.Content.ReadAsStringAsync().Result;
 
-                        jsonResponse = JsonConvert.DeserializeObject<ContactViewModel>(resp);
+                        jsonResponse = JsonConvert.DeserializeObject<ContactsViewModel>(resp);
                     }
                 }
             }
@@ -70,6 +75,24 @@ namespace Phonebook.Advanced.Services
             }
 
             return jsonResponse;
+        }
+
+        public async Task<ContactsViewModel> DeleteContactAsync(ContactViewModel contact)
+        {
+            var result = new ContactsViewModel()
+            {
+                Contacts = new List<ContactViewModel>()
+            };
+
+            try
+            {
+                return await _repository.DeleteAsync(contact);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            
         }
     }
 }

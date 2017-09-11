@@ -18,13 +18,16 @@
     <thead>
         <tr>
                 <th>
-                    @Html.ActionLink("Name", "GetContacts", new { sortOrder = ViewBag.NameSortParm })
+                    @Html.ActionLink("Create New", "CreateContact", new { Model })
                 </th>
                 <th>
-                    @Html.ActionLink("Phone Number", "GetContacts", new { sortOrder = ViewBag.PhoneSortParm })
+                    @Html.ActionLink("Name", "Contacts", new { sortOrder = ViewBag.NameSortParm })
                 </th>
                 <th>
-                    @Html.ActionLink("Address", "GetContacts", new { sortOrder = ViewBag.AddressSortParm })
+                    @Html.ActionLink("Phone Number", "Contacts", new { sortOrder = ViewBag.PhoneSortParm })
+                </th>
+                <th>
+                    @Html.ActionLink("Address", "Contacts", new { sortOrder = ViewBag.AddressSortParm })
                 </th>
             <th></th>
         </tr>
@@ -40,6 +43,10 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Address)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "EditContact", new { item }) |
+                @Html.ActionLink("Delete", "DeleteContact", new { contacts = new { item.Name, item.PhoneNumber, item.Address }})
             </td>
         </tr>
 }

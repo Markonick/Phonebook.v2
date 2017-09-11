@@ -16,7 +16,7 @@ namespace Phonebook.Advanced.Controllers
             _service = service;
         }
         
-        public async Task<ViewResult> GetContacts(string sortOrder, string searchString)
+        public async Task<ViewResult> Contacts(string sortOrder, string searchString)
         {
             var response = await _service.GetContactsAsync();
             var contacts = response.Contacts;
@@ -26,17 +26,30 @@ namespace Phonebook.Advanced.Controllers
             return View(contacts);
         }
 
-        public async Task<ViewResult> CreateContact(ContactViewModel contactViewModel, string sortOrder, string searchString)
+        public async Task<ViewResult> CreateContact(ContactViewModel contactViewModel, string sortOrder)
         {
             var response = await _service.CreateContactAsync(contactViewModel);
-            var contact = new ContactViewModel
-            {
-                Name = response.Name,
-                PhoneNumber = response.PhoneNumber,
-                Address = response.Address
-            };
+            var contacts = response.Contacts;
 
-            return View(contact);
+            contacts = SortOrFilterContacts(ViewBag, sortOrder, "", contacts);
+
+            return View(contacts);
+        }
+        public async Task<ViewResult> EditContact(ContactViewModel contactViewModel, string sortOrder)
+        {
+            var response = await _service.CreateContactAsync(contactViewModel);
+            var contacts = response.Contacts;
+
+            contacts = SortOrFilterContacts(ViewBag, sortOrder, "", contacts);
+
+            return View(contacts);
+        }
+        public async Task<ViewResult> DeleteContact(ContactViewModel contactViewModel)
+        {
+            var response = await _service.DeleteContactAsync(contactViewModel);
+            var contacts = response.Contacts;
+
+            return View(contacts);
         }
 
         private static List<ContactViewModel> SortOrFilterContacts(dynamic viewBag, string sortOrder, string searchString, List<ContactViewModel> contacts)

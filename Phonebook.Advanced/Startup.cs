@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Phonebook.Advanced.Repositories;
 using Phonebook.Advanced.Services;
 
 namespace Phonebook.Advanced
@@ -28,7 +29,8 @@ namespace Phonebook.Advanced
             var apiSettings = Configuration.GetSection("apisettings");
             var apiBaseUrl = apiSettings.GetValue<string>("baseurl");
 
-            services.AddSingleton<IPhonebookService, IPhonebookService>(x => new PhonebookService(new HttpClient(), apiBaseUrl));
+            services.AddSingleton<IRepository, Repository>(x => new Repository());
+            services.AddSingleton<IPhonebookService, IPhonebookService>(x => new PhonebookService(new HttpClient(), new Repository(), apiBaseUrl));
             // Add framework services.
             services.AddMvc();
         }
@@ -44,7 +46,7 @@ namespace Phonebook.Advanced
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Phonebook}/{action=GetContacts}");
+                    template: "{controller=Phonebook}/{action=Contacts}");
             });
         }
     }
